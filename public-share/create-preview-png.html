@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Create PNG Preview for WeChat</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, system-ui, sans-serif;
+            background: #f0f0f0;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            display: block;
+            margin: 20px 0;
+            background: white;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #000;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .instructions {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>生成微信分享预览图片</h1>
+    <canvas id="canvas" width="400" height="400"></canvas>
+    <button onclick="downloadImage()">下载 preview.png</button>
+    <button onclick="copyDataURL()">复制 Base64 数据</button>
+    
+    <div class="instructions">
+        <h3>使用说明：</h3>
+        <ol>
+            <li>点击"下载 preview.png"按钮</li>
+            <li>将下载的图片上传到 public-share 文件夹</li>
+            <li>推送到 GitHub</li>
+            <li>更新 index.html 中的 meta 标签指向 PNG 文件</li>
+        </ol>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // White background
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, 400, 400);
+        
+        // Top border
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, 400, 2);
+        
+        // Card container with border
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(50, 80, 300, 240);
+        
+        // Play button circle
+        ctx.fillStyle = '#000000';
+        ctx.beginPath();
+        ctx.arc(200, 180, 35, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Play triangle
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.moveTo(190, 165);
+        ctx.lineTo(190, 195);
+        ctx.lineTo(215, 180);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Title
+        ctx.fillStyle = '#000000';
+        ctx.font = 'bold 24px -apple-system, system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('音频录音', 200, 260);
+        
+        // Subtitle
+        ctx.fillStyle = '#666666';
+        ctx.font = '16px -apple-system, system-ui, sans-serif';
+        ctx.fillText('点击播放', 200, 285);
+        
+        // Waveform bars
+        ctx.fillStyle = '#000000';
+        const barX = 140;
+        const barY = 180;
+        const bars = [
+            {x: 0, h: 15, o: 0.2},
+            {x: 10, h: 25, o: 0.3},
+            {x: 20, h: 12, o: 0.2},
+            {x: 30, h: 30, o: 0.4},
+            {x: 40, h: 18, o: 0.2},
+            {x: 50, h: 25, o: 0.3},
+            {x: 60, h: 10, o: 0.2},
+            {x: 70, h: 28, o: 0.3},
+            {x: 80, h: 20, o: 0.2},
+            {x: 90, h: 25, o: 0.3},
+            {x: 100, h: 15, o: 0.2},
+            {x: 110, h: 22, o: 0.3}
+        ];
+        
+        bars.forEach(bar => {
+            ctx.globalAlpha = bar.o;
+            ctx.fillRect(barX + bar.x, barY - bar.h/2, 3, bar.h);
+        });
+        ctx.globalAlpha = 1.0;
+        
+        // Bottom border
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 398, 400, 2);
+        
+        // Brand text
+        ctx.fillStyle = '#999999';
+        ctx.font = '12px -apple-system, system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Audio Share', 200, 360);
+        
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = 'preview.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        function copyDataURL() {
+            const dataURL = canvas.toDataURL('image/png');
+            navigator.clipboard.writeText(dataURL).then(() => {
+                alert('Base64 数据已复制到剪贴板');
+            });
+        }
+    </script>
+</body>
+</html>
