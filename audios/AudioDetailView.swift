@@ -33,7 +33,7 @@ final class ShareableContent: NSObject, UIActivityItemSource {
         metadata.title = title
         
         // Use the same image as the website for consistency
-        if let imageURL = URL(string: "https://audio-share-nu.vercel.app/clean-preview.png") {
+        if let imageURL = URL(string: "https://audio-share-nu.vercel.app/minimal-preview.png") {
             metadata.imageProvider = NSItemProvider(contentsOf: imageURL)
         } else {
             metadata.imageProvider = NSItemProvider(object: image ?? createDefaultImage())
@@ -766,17 +766,29 @@ struct AudioDetailView: View {
             
             switch selectedShareType {
             case .summary:
-                title = "🎵 点点滴滴 - 录音摘要"
+                title = "点点滴滴 - 录音摘要"
                 subtitle = summary.isEmpty ? "暂无总结" : String(summary.prefix(100))
                 
             case .audio:
-                title = "🎵 点点滴滴 - 音频分享"
+                title = "点点滴滴 - 音频分享"
                 subtitle = "时长: \(formatDuration(recording.duration))"
                 
             case .combined:
-                title = "🎵 点点滴滴 - 完整录音"
+                title = "点点滴滴 - 完整录音"
                 subtitle = summary.isEmpty ? "完整音频体验" : String(summary.prefix(100))
             }
+            
+            // Also include simplified text for apps that prefer text
+            var shareText = ""
+            shareText += "📅 \(formatDate(recording.timestamp))\n\n"
+            
+            if selectedShareType == .summary || selectedShareType == .combined {
+                if !summary.isEmpty {
+                    shareText += "\(summary)\n\n"
+                }
+            }
+            
+            shareText += "🌐 \(webPageURL)"
             
             // Create the shareable content with rich preview
             if let url = URL(string: webPageURL) {
@@ -785,7 +797,9 @@ struct AudioDetailView: View {
                     title: title,
                     subtitle: subtitle
                 )
-                itemsToShare = [shareableContent]
+                itemsToShare = [shareableContent, shareText]
+            } else {
+                itemsToShare = [shareText]
             }
             
             await MainActor.run {
