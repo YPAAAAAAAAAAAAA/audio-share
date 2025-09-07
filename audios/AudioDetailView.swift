@@ -719,46 +719,7 @@ struct AudioDetailView: View {
             // Generate web page URL for this share type
             let webPageURL = await generateWebPageURL(for: selectedShareType)
             
-            switch selectedShareType {
-            case .summary:
-                // Share formatted text content with web page link
-                var shareText = "🎵 点点滴滴 - 录音摘要\n\n"
-                shareText += "📝 总结: \(summary.isEmpty ? "暂无总结" : summary)\n\n"
-                
-                if !transcription.isEmpty {
-                    shareText += "📄 转录内容:\n\(transcription)\n\n"
-                }
-                
-                shareText += "⏱️ 时长: \(formatDuration(recording.duration))\n"
-                shareText += "📅 录制时间: \(formatDate(recording.timestamp))\n\n"
-                shareText += "🌐 在线查看: \(webPageURL)"
-                
-                itemsToShare.append(shareText)
-                
-            case .audio:
-                // Share audio with web page link
-                var shareText = "🎵 点点滴滴 - 音频分享\n\n"
-                shareText += "⏱️ 时长: \(formatDuration(recording.duration))\n"
-                shareText += "📅 录制时间: \(formatDate(recording.timestamp))\n\n"
-                shareText += "🌐 在线播放: \(webPageURL)"
-                
-                itemsToShare.append(shareText)
-                
-            case .combined:
-                // Share both text and web page link
-                var shareText = "🎵 点点滴滴 - 完整录音\n\n"
-                shareText += "📝 总结: \(summary.isEmpty ? "暂无总结" : summary)\n\n"
-                
-                if !transcription.isEmpty {
-                    shareText += "📄 转录内容:\n\(transcription)\n\n"
-                }
-                
-                shareText += "⏱️ 时长: \(formatDuration(recording.duration))\n"
-                shareText += "📅 录制时间: \(formatDate(recording.timestamp))\n\n"
-                shareText += "🌐 完整体验: \(webPageURL)"
-                
-                itemsToShare.append(shareText)
-            }
+            // This old logic is replaced by the new simplified format below
             
             // Create rich shareable content with preview
             let title: String
@@ -778,17 +739,21 @@ struct AudioDetailView: View {
                 subtitle = summary.isEmpty ? "完整音频体验" : String(summary.prefix(100))
             }
             
-            // Also include simplified text for apps that prefer text
+            // Simple format: 时间：内容
             var shareText = ""
-            shareText += "📅 \(formatDate(recording.timestamp))\n\n"
+            shareText += "\(formatDate(recording.timestamp))："
             
             if selectedShareType == .summary || selectedShareType == .combined {
                 if !summary.isEmpty {
-                    shareText += "\(summary)\n\n"
+                    shareText += "\(summary)"
+                } else {
+                    shareText += "音频录音"
                 }
+            } else if selectedShareType == .audio {
+                shareText += "音频录音"
             }
             
-            shareText += "🌐 \(webPageURL)"
+            shareText += "\n\n🌐 \(webPageURL)"
             
             // Create the shareable content with rich preview
             if let url = URL(string: webPageURL) {
