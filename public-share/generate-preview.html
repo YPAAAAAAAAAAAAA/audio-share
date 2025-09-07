@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Generate Preview Image</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: system-ui;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            display: block;
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Preview Image Generator</h1>
+    <p>This generates the preview image for social media sharing</p>
+    <canvas id="canvas" width="1200" height="630"></canvas>
+    <button onclick="downloadImage()">Download preview.png</button>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Create gradient background
+        const gradient = ctx.createLinearGradient(0, 0, 1200, 630);
+        gradient.addColorStop(0, '#667eea');
+        gradient.addColorStop(1, '#764ba2');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 1200, 630);
+        
+        // Draw white circle for icon background
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(600, 250, 90, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Add shadow to circle
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+        ctx.shadowBlur = 30;
+        ctx.shadowOffsetY = 10;
+        
+        // Draw microphone emoji
+        ctx.font = '100px system-ui';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🎙️', 600, 250);
+        
+        // Reset shadow
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+        
+        // Draw title
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 56px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('音频录音分享', 600, 380);
+        
+        // Draw subtitle
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.font = '28px system-ui';
+        ctx.fillText('点击收听完整内容', 600, 440);
+        
+        // Draw waveform bars
+        const barCount = 10;
+        const barWidth = 6;
+        const barGap = 8;
+        const startX = 600 - (barCount * (barWidth + barGap)) / 2;
+        const barHeights = [20, 40, 30, 50, 35, 45, 25, 40, 30, 35];
+        
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        for (let i = 0; i < barCount; i++) {
+            const x = startX + i * (barWidth + barGap);
+            const height = barHeights[i];
+            const y = 500 - height / 2;
+            
+            // Draw rounded rectangle for each bar
+            ctx.beginPath();
+            ctx.roundRect(x, y, barWidth, height, 3);
+            ctx.fill();
+        }
+        
+        // Draw brand
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.font = '24px system-ui';
+        ctx.textAlign = 'right';
+        ctx.fillText('Audio Share', 1160, 590);
+        
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = 'preview.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+    </script>
+</body>
+</html>

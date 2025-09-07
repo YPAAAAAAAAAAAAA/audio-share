@@ -4,9 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title id="page-title">音频分享 - Audio Share</title>
+    <!-- Open Graph Meta Tags for WeChat/WhatsApp/Social Media -->
     <meta property="og:title" content="音频录音分享" id="og-title" />
     <meta property="og:description" content="点击查看音频录音的详细内容" id="og-description" />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="article" />
+    <meta property="og:image" content="https://audio-share-nu.vercel.app/preview.svg" id="og-image" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="" id="og-url" />
+    <meta property="og:site_name" content="Audio Share" />
+    <meta property="og:locale" content="zh_CN" />
+    
+    <!-- WeChat specific -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="音频录音分享" id="twitter-title" />
+    <meta name="twitter:description" content="点击查看音频录音的详细内容" id="twitter-description" />
+    <meta name="twitter:image" content="https://audio-share-nu.vercel.app/preview.svg" id="twitter-image" />
+    
+    <!-- Additional tags for better compatibility -->
+    <link rel="image_src" href="https://audio-share-nu.vercel.app/preview.svg" />
     <style>
         * {
             margin: 0;
@@ -391,15 +407,28 @@
             const showSummary = (shareType === 'summary' || shareType === 'combined') && data.summary;
             const showTranscription = (shareType === 'summary' || shareType === 'combined') && data.transcription;
 
-            // Update page metadata
-            const title = `音频录音 - ${getShareTypeName(shareType)}`;
+            // Update page metadata for social media previews
+            const title = `🎙️ 音频录音 - ${getShareTypeName(shareType)}`;
             pageTitle.textContent = title;
-            ogTitle.setAttribute('content', title);
+            
+            // Update all Open Graph and Twitter meta tags
+            document.getElementById('og-title').setAttribute('content', title);
+            document.getElementById('twitter-title').setAttribute('content', title);
             headerTitle.textContent = title;
             
+            // Set description from summary or transcription
+            let description = '点击收听完整音频录音';
             if (data.summary) {
-                ogDescription.setAttribute('content', data.summary.substring(0, 100) + '...');
+                description = data.summary.substring(0, 150) + '...';
+            } else if (data.transcription) {
+                description = data.transcription.substring(0, 150) + '...';
             }
+            document.getElementById('og-description').setAttribute('content', description);
+            document.getElementById('twitter-description').setAttribute('content', description);
+            
+            // Set the current URL
+            const currentUrl = window.location.href;
+            document.getElementById('og-url').setAttribute('content', currentUrl);
 
             // Show relevant sections
             if (showAudio && data.audio_url) {
