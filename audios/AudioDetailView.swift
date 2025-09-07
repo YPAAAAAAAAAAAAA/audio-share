@@ -1,6 +1,127 @@
 import SwiftUI
 import AVFoundation
 import UIKit
+import LinkPresentation
+
+// MARK: - ShareableContent for Rich Link Previews
+final class ShareableContent: NSObject, UIActivityItemSource {
+    private let url: URL
+    private let title: String
+    private let subtitle: String
+    private let image: UIImage?
+    
+    init(url: URL, title: String, subtitle: String, image: UIImage? = nil) {
+        self.url = url
+        self.title = title
+        self.subtitle = subtitle
+        self.image = image
+        super.init()
+    }
+    
+    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
+        return url
+    }
+    
+    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
+        return url
+    }
+    
+    @available(iOS 13.0, *)
+    func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
+        let metadata = LPLinkMetadata()
+        metadata.originalURL = url
+        metadata.title = title
+        
+        // Use the same image as the website for consistency
+        if let imageURL = URL(string: "https://audio-share-nu.vercel.app/og-preview.png") {
+            metadata.imageProvider = NSItemProvider(contentsOf: imageURL)
+        } else {
+            metadata.imageProvider = NSItemProvider(object: image ?? createDefaultImage())
+        }
+        
+        return metadata
+    }
+    
+    private func createDefaultImage() -> UIImage {
+        let size = CGSize(width: 400, height: 400)
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { context in
+            // Pure white background - clean and minimal
+            UIColor.white.setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+            
+            // Subtle top border only (like app header)
+            UIColor.black.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: size.width, height: 2))
+            
+            // Larger, cleaner play button
+            let centerX = size.width / 2
+            let centerY = size.height / 2 - 20
+            let buttonSize: CGFloat = 60
+            
+            // Play button circle - solid black
+            UIColor.black.setFill()
+            let playButtonRect = CGRect(
+                x: centerX - buttonSize/2,
+                y: centerY - buttonSize/2,
+                width: buttonSize,
+                height: buttonSize
+            )
+            context.cgContext.fillEllipse(in: playButtonRect)
+            
+            // Play triangle - cleaner geometry
+            UIColor.white.setFill()
+            let triangleSize: CGFloat = 20
+            let triangle = UIBezierPath()
+            let triangleLeft = centerX - triangleSize/3
+            let triangleRight = centerX + triangleSize/2
+            let triangleTop = centerY - triangleSize/2
+            let triangleBottom = centerY + triangleSize/2
+            
+            triangle.move(to: CGPoint(x: triangleLeft, y: triangleTop))
+            triangle.addLine(to: CGPoint(x: triangleLeft, y: triangleBottom))
+            triangle.addLine(to: CGPoint(x: triangleRight, y: centerY))
+            triangle.close()
+            triangle.fill()
+            
+            // Minimal waveform visualization
+            let waveformY = centerY + 60
+            let barWidth: CGFloat = 3
+            let barSpacing: CGFloat = 6
+            let barCount = 15
+            let totalWidth = CGFloat(barCount) * (barWidth + barSpacing) - barSpacing
+            let startX = (size.width - totalWidth) / 2
+            
+            UIColor.black.setFill()
+            for i in 0..<barCount {
+                let x = startX + CGFloat(i) * (barWidth + barSpacing)
+                let heights: [CGFloat] = [12, 20, 16, 28, 18, 24, 14, 26, 20, 22, 16, 30, 18, 24, 16]
+                let height = heights[i % heights.count]
+                let alpha: CGFloat = [0.2, 0.4, 0.3, 0.6, 0.3, 0.5, 0.2, 0.5, 0.4, 0.4, 0.3, 0.7, 0.3, 0.5, 0.3][i % heights.count]
+                
+                UIColor.black.withAlphaComponent(alpha).setFill()
+                let barRect = CGRect(x: x, y: waveformY - height/2, width: barWidth, height: height)
+                context.fill(barRect)
+            }
+            
+            // Very subtle title - smaller and lower contrast
+            let titleAttributes: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 18, weight: .medium),
+                .foregroundColor: UIColor.black.withAlphaComponent(0.8)
+            ]
+            let titleString = "音频录音"
+            let titleSize = titleString.size(withAttributes: titleAttributes)
+            titleString.draw(
+                at: CGPoint(x: (size.width - titleSize.width) / 2, y: waveformY + 40),
+                withAttributes: titleAttributes
+            )
+            
+            // Subtle bottom border
+            UIColor.black.setFill()
+            context.fill(CGRect(x: 0, y: size.height - 2, width: size.width, height: 2))
+        }
+    }
+}
 
 struct AudioDetailView: View {
     let recording: AudioRecording
@@ -639,6 +760,34 @@ struct AudioDetailView: View {
                 itemsToShare.append(shareText)
             }
             
+            // Create rich shareable content with preview
+            let title: String
+            let subtitle: String
+            
+            switch selectedShareType {
+            case .summary:
+                title = "🎵 点点滴滴 - 录音摘要"
+                subtitle = summary.isEmpty ? "暂无总结" : String(summary.prefix(100))
+                
+            case .audio:
+                title = "🎵 点点滴滴 - 音频分享"
+                subtitle = "时长: \(formatDuration(recording.duration))"
+                
+            case .combined:
+                title = "🎵 点点滴滴 - 完整录音"
+                subtitle = summary.isEmpty ? "完整音频体验" : String(summary.prefix(100))
+            }
+            
+            // Create the shareable content with rich preview
+            if let url = URL(string: webPageURL) {
+                let shareableContent = ShareableContent(
+                    url: url,
+                    title: title,
+                    subtitle: subtitle
+                )
+                itemsToShare = [shareableContent]
+            }
+            
             await MainActor.run {
                 shareItems = itemsToShare
                 showShareSheet = true
@@ -649,7 +798,7 @@ struct AudioDetailView: View {
     
     func generateWebPageURL(for shareType: ShareType) async -> String {
         // For testing WeChat preview: uncomment the next line to test with placeholder
-        return "https://audio-share-nu.vercel.app/test-wechat.html"
+        // return "https://audio-share-nu.vercel.app/test-wechat.html"
         
         guard let supabaseId = recording.supabaseId else {
             return "录音未上传到云端"
