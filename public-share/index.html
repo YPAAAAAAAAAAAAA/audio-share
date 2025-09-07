@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title id="page-title">音频分享 - Audio Share</title>
+    <meta property="og:title" content="音频录音分享" id="og-title" />
+    <meta property="og:description" content="点击查看音频录音的详细内容" id="og-description" />
+    <meta property="og:type" content="website" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 2px solid #000;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title {
+            flex: 1;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 0 20px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .player-card {
+            background: white;
+            border: 2px solid #000;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .duration-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .duration-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .duration-value {
+            font-size: 24px;
+            font-weight: bold;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .waveform-container {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            margin: 24px 0;
+            padding: 10px;
+            background: #f8f8f8;
+            border-radius: 8px;
+        }
+
+        .waveform-bar {
+            width: 3px;
+            background: #000;
+            border-radius: 1.5px;
+            transition: all 0.3s ease;
+        }
+
+        .waveform-bar.active {
+            background: #ff3b30;
+            animation: pulse 0.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scaleY(1); }
+            50% { opacity: 0.8; transform: scaleY(1.2); }
+        }
+
+        .progress-container {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: #000;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .play-button {
+            width: 64px;
+            height: 64px;
+            border-radius: 32px;
+            background: #000;
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .play-button:hover {
+            transform: scale(1.05);
+        }
+
+        .play-button:active {
+            transform: scale(0.95);
+        }
+
+        .play-button svg {
+            width: 24px;
+            height: 24px;
+            margin-left: 3px;
+        }
+
+        .play-button.playing svg {
+            margin-left: 0;
+        }
+
+        .info-card {
+            background: white;
+            border: 2px solid #000;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .info-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-content {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #000;
+            white-space: pre-wrap;
+        }
+
+        .footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #eee;
+        }
+
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            gap: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f0f0f0;
+            border-top: 3px solid #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            text-align: center;
+            color: #ff3b30;
+            font-size: 18px;
+            margin: 50px 0;
+            padding: 40px;
+            background: #fff5f5;
+            border-radius: 12px;
+            border: 2px solid #ffe0e0;
+        }
+
+        .no-content {
+            text-align: center;
+            color: #666;
+            font-size: 16px;
+            margin: 50px 0;
+            padding: 40px;
+            background: #f8f8f8;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .content {
+                padding: 16px;
+            }
+            
+            .player-card {
+                padding: 20px;
+            }
+        }
+
+        /* Hidden initially */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-title" id="header-title">音频详情</div>
+    </div>
+
+    <div class="content" id="content">
+        <!-- Loading State -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div>加载中...</div>
+        </div>
+
+        <!-- Error State -->
+        <div class="error hidden" id="error">
+            <div id="error-message">加载失败</div>
+        </div>
+
+        <!-- Player Card -->
+        <div class="player-card hidden" id="playerCard">
+            <div class="duration-info">
+                <span class="duration-label">时长</span>
+                <span class="duration-value" id="durationText">00:00</span>
+            </div>
+
+            <div class="waveform-container" id="waveform"></div>
+
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <button class="play-button" id="playButton">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="info-card hidden" id="summaryCard">
+            <div class="info-title">AI 总结</div>
+            <div class="info-content" id="summaryContent"></div>
+        </div>
+
+        <!-- Transcription Card -->
+        <div class="info-card hidden" id="transcriptionCard">
+            <div class="info-title">转录内容</div>
+            <div class="info-content" id="transcriptionContent"></div>
+        </div>
+
+        <!-- No Content Message -->
+        <div class="no-content hidden" id="noContent">
+            暂无内容可显示
+        </div>
+    </div>
+
+    <div class="footer">
+        由 Audio Recorder 生成 · <span id="timestamp"></span>
+    </div>
+
+    <!-- Audio Element (Hidden) -->
+    <audio id="audioPlayer" style="display: none;" crossorigin="anonymous"></audio>
+
+    <script>
+        // Configuration
+        const SUPABASE_URL = 'https://wfxlihpxeeyjlllvoypa.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndmeGxpaHB4ZWV5amxsbHZveXBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3MDM0ODUsImV4cCI6MjA3MjI3OTQ4NX0.wubM4vjBuHxCHqm176fpieSVax0AofdzLYpwcFaSf9k';
+
+        // DOM Elements
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const errorMessage = document.getElementById('error-message');
+        const playerCard = document.getElementById('playerCard');
+        const summaryCard = document.getElementById('summaryCard');
+        const transcriptionCard = document.getElementById('transcriptionCard');
+        const noContent = document.getElementById('noContent');
+        const headerTitle = document.getElementById('header-title');
+        const durationText = document.getElementById('durationText');
+        const summaryContent = document.getElementById('summaryContent');
+        const transcriptionContent = document.getElementById('transcriptionContent');
+        const timestamp = document.getElementById('timestamp');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playButton = document.getElementById('playButton');
+        const progressBar = document.getElementById('progressBar');
+        const progressContainer = document.getElementById('progressContainer');
+        const pageTitle = document.getElementById('page-title');
+        const ogTitle = document.getElementById('og-title');
+        const ogDescription = document.getElementById('og-description');
+
+        // State
+        let isPlaying = false;
+        let audioData = null;
+        let shareType = 'combined';
+
+        // Initialize
+        async function init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const recordingId = urlParams.get('id');
+            shareType = urlParams.get('type') || 'combined';
+            
+            if (!recordingId) {
+                showError('缺少录音ID参数');
+                return;
+            }
+
+            try {
+                const data = await fetchRecordingData(recordingId);
+                audioData = data;
+                displayRecordingData(data);
+                hideLoading();
+            } catch (err) {
+                console.error('Failed to load recording:', err);
+                showError(err.message || '加载录音失败');
+            }
+        }
+
+        // Fetch recording data from Supabase
+        async function fetchRecordingData(id) {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/audio_records?id=eq.${id}&select=id,audio_url,duration,created_at,summary,transcription`, {
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            if (!data || data.length === 0) {
+                throw new Error('录音未找到');
+            }
+
+            return data[0];
+        }
+
+        // Display recording data
+        function displayRecordingData(data) {
+            const showAudio = shareType === 'audio' || shareType === 'combined';
+            const showSummary = (shareType === 'summary' || shareType === 'combined') && data.summary;
+            const showTranscription = (shareType === 'summary' || shareType === 'combined') && data.transcription;
+
+            // Update page metadata
+            const title = `音频录音 - ${getShareTypeName(shareType)}`;
+            pageTitle.textContent = title;
+            ogTitle.setAttribute('content', title);
+            headerTitle.textContent = title;
+            
+            if (data.summary) {
+                ogDescription.setAttribute('content', data.summary.substring(0, 100) + '...');
+            }
+
+            // Show relevant sections
+            if (showAudio && data.audio_url) {
+                setupAudioPlayer(data.audio_url, data.duration);
+                playerCard.classList.remove('hidden');
+            }
+
+            if (showSummary) {
+                summaryContent.textContent = data.summary;
+                summaryCard.classList.remove('hidden');
+            }
+
+            if (showTranscription) {
+                transcriptionContent.textContent = data.transcription;
+                transcriptionCard.classList.remove('hidden');
+            }
+
+            // Show no content message if nothing to display
+            if (!showAudio && !showSummary && !showTranscription) {
+                noContent.textContent = getNoContentMessage(shareType);
+                noContent.classList.remove('hidden');
+            }
+
+            // Update timestamp
+            if (data.created_at) {
+                timestamp.textContent = formatDate(data.created_at);
+            }
+        }
+
+        // Setup audio player
+        function setupAudioPlayer(url, duration) {
+            durationText.textContent = formatDuration(duration);
+            audioPlayer.src = url;
+            
+            generateWaveform();
+            
+            audioPlayer.addEventListener('loadedmetadata', () => {
+                updateDuration();
+            });
+            
+            audioPlayer.addEventListener('timeupdate', () => {
+                updateProgress();
+            });
+            
+            audioPlayer.addEventListener('ended', () => {
+                isPlaying = false;
+                updatePlayButton();
+                updateWaveform();
+            });
+
+            audioPlayer.addEventListener('error', (e) => {
+                console.error('Audio error:', e);
+                playButton.style.opacity = '0.5';
+                playButton.innerHTML = '<div style="font-size: 12px;">无法播放</div>';
+            });
+        }
+
+        // Generate waveform visualization
+        function generateWaveform() {
+            const container = document.getElementById('waveform');
+            container.innerHTML = ''; // Clear existing bars
+            const barCount = 40;
+            
+            for (let i = 0; i < barCount; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'waveform-bar';
+                const height = Math.random() * 30 + 10;
+                bar.style.height = height + 'px';
+                container.appendChild(bar);
+            }
+        }
+
+        // Play/Pause functionality
+        playButton.addEventListener('click', () => {
+            if (!audioPlayer.src) return;
+            
+            if (isPlaying) {
+                audioPlayer.pause();
+            } else {
+                audioPlayer.play().catch(e => {
+                    console.error('Play failed:', e);
+                    alert('音频播放失败，请检查网络连接');
+                });
+            }
+            isPlaying = !isPlaying;
+            updatePlayButton();
+            updateWaveform();
+        });
+
+        // Update play button icon
+        function updatePlayButton() {
+            if (isPlaying) {
+                playButton.classList.add('playing');
+                playButton.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="6" y="4" width="4" height="16"/>
+                        <rect x="14" y="4" width="4" height="16"/>
+                    </svg>
+                `;
+            } else {
+                playButton.classList.remove('playing');
+                playButton.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                `;
+            }
+        }
+
+        // Update waveform animation
+        function updateWaveform() {
+            const bars = document.querySelectorAll('.waveform-bar');
+            bars.forEach(bar => {
+                if (isPlaying) {
+                    bar.classList.add('active');
+                } else {
+                    bar.classList.remove('active');
+                }
+            });
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            if (audioPlayer.duration) {
+                const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                progressBar.style.width = progress + '%';
+            }
+        }
+
+        // Update duration display
+        function updateDuration() {
+            const duration = audioPlayer.duration;
+            if (duration) {
+                durationText.textContent = formatDuration(duration);
+            }
+        }
+
+        // Progress bar click to seek
+        progressContainer.addEventListener('click', (e) => {
+            if (audioPlayer.duration) {
+                const rect = progressContainer.getBoundingClientRect();
+                const percent = (e.clientX - rect.left) / rect.width;
+                audioPlayer.currentTime = percent * audioPlayer.duration;
+            }
+        });
+
+        // Utility functions
+        function formatDuration(seconds) {
+            if (!seconds || isNaN(seconds)) return '00:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function formatDate(isoString) {
+            try {
+                const date = new Date(isoString);
+                return date.toLocaleDateString('zh-CN') + ' ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            } catch {
+                return '未知时间';
+            }
+        }
+
+        function getShareTypeName(type) {
+            switch (type) {
+                case 'summary': return '摘要分享';
+                case 'audio': return '音频分享';
+                case 'combined': return '完整分享';
+                default: return '分享';
+            }
+        }
+
+        function getNoContentMessage(type) {
+            switch (type) {
+                case 'summary': return '暂无文本内容';
+                case 'audio': return '暂无音频内容';
+                default: return '暂无内容可显示';
+            }
+        }
+
+        function showError(message) {
+            loading.classList.add('hidden');
+            errorMessage.textContent = message;
+            error.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            loading.classList.add('hidden');
+        }
+
+        // Initialize on page load
+        init();
+    </script>
+</body>
+</html>
