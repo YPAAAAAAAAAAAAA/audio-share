@@ -440,6 +440,7 @@
                 const pathMatch = url.match(/audio-files\/[^?]+/);
                 if (pathMatch) {
                     // Use public URL endpoint
+                    const supabaseUrl = 'https://wfxlihpxeeyjlllvoypa.supabase.co';
                     url = `${supabaseUrl}/storage/v1/object/public/${pathMatch[0]}`;
                 }
             }
