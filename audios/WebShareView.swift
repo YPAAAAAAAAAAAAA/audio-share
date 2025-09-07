@@ -356,8 +356,11 @@ struct WebShareView: View {
     }
     
     func shareToMore() {
-        // 更多分享选项
-        let activityVC = UIActivityViewController(activityItems: [shareURL], applicationActivities: nil)
+        // 更多分享选项 - 使用简化格式
+        let simpleShareText = "\(formatDate(recording.timestamp))：\(recording.title.isEmpty ? "音频录音" : recording.title)\n\n🌐 \(shareURL)"
+        print("🔍 WebShareView: Generated share text: \(simpleShareText)")
+        
+        let activityVC = UIActivityViewController(activityItems: [simpleShareText], applicationActivities: nil)
         
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootViewController = windowScene.windows.first?.rootViewController {

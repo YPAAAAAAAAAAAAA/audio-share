@@ -719,43 +719,22 @@ struct AudioDetailView: View {
             // Generate web page URL for this share type
             let webPageURL = await generateWebPageURL(for: selectedShareType)
             
-            // This old logic is replaced by the new simplified format below
-            
-            // Create rich shareable content with preview
-            let title: String
-            let subtitle: String
-            
-            switch selectedShareType {
-            case .summary:
-                title = "点点滴滴 - 录音摘要"
-                subtitle = summary.isEmpty ? "暂无总结" : String(summary.prefix(100))
-                
-            case .audio:
-                title = "点点滴滴 - 音频分享"
-                subtitle = "时长: \(formatDuration(recording.duration))"
-                
-            case .combined:
-                title = "点点滴滴 - 完整录音"
-                subtitle = summary.isEmpty ? "完整音频体验" : String(summary.prefix(100))
-            }
-            
-            // Simple format: 时间：内容
-            var shareText = ""
-            shareText += "\(formatDate(recording.timestamp))："
-            
+            // SIMPLE SHARE FORMAT: 时间：内容
+            let contentText: String
             if selectedShareType == .summary || selectedShareType == .combined {
-                if !summary.isEmpty {
-                    shareText += "\(summary)"
-                } else {
-                    shareText += "音频录音"
-                }
-            } else if selectedShareType == .audio {
-                shareText += "音频录音"
+                contentText = summary.isEmpty ? "音频录音" : summary
+            } else {
+                contentText = "音频录音"
             }
             
-            shareText += "\n\n🌐 \(webPageURL)"
+            let shareText = "\(formatDate(recording.timestamp))：\(contentText)\n\n🌐 \(webPageURL)"
+            print("🔍 DEBUG: Generated share text: \(shareText)")
             
-            // Create the shareable content with rich preview
+            // Create rich preview title
+            let title = "点点滴滴"
+            let subtitle = contentText
+            
+            // Create shareable content with rich preview
             if let url = URL(string: webPageURL) {
                 let shareableContent = ShareableContent(
                     url: url,

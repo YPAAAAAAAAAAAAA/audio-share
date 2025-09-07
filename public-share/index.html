@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <!-- Open Graph Meta Tags MUST be first for WeChat -->
-    <meta property="og:title" content="音频录音分享" id="og-title" />
-    <meta property="og:description" content="点击查看音频录音的详细内容" id="og-description" />
+    <meta property="og:title" content="" id="og-title" />
+    <meta property="og:description" content="" id="og-description" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://audio-share-nu.vercel.app/minimal-preview.png" id="og-image" />
     <meta property="og:image:width" content="1200" />
@@ -407,22 +407,19 @@
             const showSummary = (shareType === 'summary' || shareType === 'combined') && data.summary;
             const showTranscription = (shareType === 'summary' || shareType === 'combined') && data.transcription;
 
-            // Update page metadata for social media previews
-            const title = `🎙️ 音频录音 - ${getShareTypeName(shareType)}`;
-            pageTitle.textContent = title;
+            // Update page metadata - SIMPLE FORMAT for WeChat
+            const contentText = data.summary && data.summary.trim() ? data.summary : '音频录音';
+            const simpleTitle = `${formatDate(data.created_at)}：${contentText}`;
             
-            // Update all Open Graph and Twitter meta tags
-            document.getElementById('og-title').setAttribute('content', title);
-            document.getElementById('twitter-title').setAttribute('content', title);
-            headerTitle.textContent = title;
+            pageTitle.textContent = simpleTitle;
+            headerTitle.textContent = simpleTitle;
             
-            // Set description from summary or transcription
-            let description = '点击收听完整音频录音';
-            if (data.summary) {
-                description = data.summary.substring(0, 150) + '...';
-            } else if (data.transcription) {
-                description = data.transcription.substring(0, 150) + '...';
-            }
+            // Update Open Graph meta tags with simple format
+            document.getElementById('og-title').setAttribute('content', simpleTitle);
+            document.getElementById('twitter-title').setAttribute('content', simpleTitle);
+            
+            // Simple description
+            const description = contentText;
             document.getElementById('og-description').setAttribute('content', description);
             document.getElementById('twitter-description').setAttribute('content', description);
             
