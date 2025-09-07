@@ -648,6 +648,9 @@ struct AudioDetailView: View {
     }
     
     func generateWebPageURL(for shareType: ShareType) async -> String {
+        // For testing WeChat preview: uncomment the next line to test with placeholder
+        return "https://audio-share-nu.vercel.app/test-wechat.html"
+        
         guard let supabaseId = recording.supabaseId else {
             return "录音未上传到云端"
         }
