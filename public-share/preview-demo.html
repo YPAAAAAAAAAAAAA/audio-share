@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview Card Demo - How it looks in WeChat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        /* WeChat Style Preview Card */
+        .wechat-preview {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        
+        .wechat-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .wechat-preview .content {
+            padding: 15px;
+        }
+        
+        .wechat-preview .title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .wechat-preview .desc {
+            font-size: 14px;
+            color: #999;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .wechat-preview .url {
+            font-size: 12px;
+            color: #b2b2b2;
+            margin-top: 8px;
+        }
+        
+        /* WhatsApp Style Preview */
+        .whatsapp-preview {
+            background: #dcf8c6;
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 40px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .whatsapp-preview .card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .whatsapp-preview img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .whatsapp-preview .content {
+            padding: 12px;
+        }
+        
+        .whatsapp-preview .title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 4px;
+        }
+        
+        .whatsapp-preview .desc {
+            font-size: 13px;
+            color: #667781;
+            line-height: 1.4;
+        }
+        
+        .whatsapp-preview .link {
+            font-size: 12px;
+            color: #00a884;
+            margin-top: 8px;
+        }
+        
+        /* Twitter Style Preview */
+        .twitter-preview {
+            background: white;
+            border: 1px solid #cfd9de;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+        
+        .twitter-preview img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        
+        .twitter-preview .content {
+            padding: 12px;
+        }
+        
+        .twitter-preview .domain {
+            font-size: 13px;
+            color: #536471;
+            margin-bottom: 2px;
+        }
+        
+        .twitter-preview .title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f1419;
+            margin-bottom: 4px;
+        }
+        
+        .twitter-preview .desc {
+            font-size: 14px;
+            color: #536471;
+            line-height: 1.4;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 40px 0 20px;
+            color: #333;
+        }
+        
+        /* The actual preview image */
+        .preview-image {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>社交媒体分享预览效果</h1>
+        <p>这是你的音频分享链接在各个平台上的显示效果</p>
+        
+        <div class="section-title">实际预览图片 (匹配App风格):</div>
+        <div class="preview-image">
+            <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto;">
+                <!-- White background like the app -->
+                <rect width="1200" height="630" fill="#FFFFFF"/>
+                
+                <!-- Top border line like app header -->
+                <rect x="0" y="0" width="1200" height="2" fill="#000000"/>
+                
+                <!-- Minimalist card style container -->
+                <rect x="300" y="150" width="600" height="330" rx="12" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+                
+                <!-- Play button circle like in app -->
+                <circle cx="600" cy="270" r="40" fill="#000000"/>
+                
+                <!-- Play triangle -->
+                <polygon points="590,255 590,285 615,270" fill="#FFFFFF"/>
+                
+                <!-- Title - minimalist style -->
+                <text x="600" y="380" font-family="-apple-system, system-ui, sans-serif" font-size="32" font-weight="600" text-anchor="middle" fill="#000000">音频录音</text>
+                
+                <!-- Subtitle -->
+                <text x="600" y="420" font-family="-apple-system, system-ui, sans-serif" font-size="20" text-anchor="middle" fill="#666666">点击播放</text>
+                
+                <!-- Minimalist waveform bars -->
+                <g transform="translate(460, 270)">
+                    <rect x="100" y="-15" width="4" height="30" fill="#000000" opacity="0.2"/>
+                    <rect x="110" y="-20" width="4" height="40" fill="#000000" opacity="0.3"/>
+                    <rect x="120" y="-10" width="4" height="20" fill="#000000" opacity="0.2"/>
+                    <rect x="130" y="-25" width="4" height="50" fill="#000000" opacity="0.4"/>
+                    <rect x="140" y="-12" width="4" height="24" fill="#000000" opacity="0.2"/>
+                    <rect x="150" y="-18" width="4" height="36" fill="#000000" opacity="0.3"/>
+                    <rect x="160" y="-8" width="4" height="16" fill="#000000" opacity="0.2"/>
+                    <rect x="170" y="-22" width="4" height="44" fill="#000000" opacity="0.3"/>
+                    <rect x="180" y="-15" width="4" height="30" fill="#000000" opacity="0.2"/>
+                    <rect x="190" y="-20" width="4" height="40" fill="#000000" opacity="0.3"/>
+                    <rect x="200" y="-10" width="4" height="20" fill="#000000" opacity="0.2"/>
+                    <rect x="210" y="-16" width="4" height="32" fill="#000000" opacity="0.3"/>
+                    <rect x="220" y="-12" width="4" height="24" fill="#000000" opacity="0.2"/>
+                    <rect x="230" y="-25" width="4" height="50" fill="#000000" opacity="0.4"/>
+                    <rect x="240" y="-18" width="4" height="36" fill="#000000" opacity="0.3"/>
+                    <rect x="250" y="-10" width="4" height="20" fill="#000000" opacity="0.2"/>
+                    <rect x="260" y="-14" width="4" height="28" fill="#000000" opacity="0.2"/>
+                    <rect x="270" y="-20" width="4" height="40" fill="#000000" opacity="0.3"/>
+                    <rect x="280" y="-8" width="4" height="16" fill="#000000" opacity="0.2"/>
+                </g>
+                
+                <!-- Bottom border -->
+                <rect x="0" y="628" width="1200" height="2" fill="#000000"/>
+                
+                <!-- Small branding text -->
+                <text x="600" y="550" font-family="-apple-system, system-ui, sans-serif" font-size="16" text-anchor="middle" fill="#999999">Audio Share</text>
+            </svg>
+        </div>
+        
+        <div class="section-title">微信 (WeChat) 预览:</div>
+        <div class="wechat-preview">
+            <svg width="100%" height="200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="wechatGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect width="100%" height="200" fill="url(#wechatGradient)"/>
+                <circle cx="50%" cy="80" r="35" fill="white"/>
+                <text x="50%" y="85" font-size="30" text-anchor="middle">🎙️</text>
+                <text x="50%" y="140" font-family="system-ui" font-size="20" font-weight="bold" text-anchor="middle" fill="white">音频录音分享</text>
+                <text x="50%" y="165" font-family="system-ui" font-size="14" text-anchor="middle" fill="white" opacity="0.9">点击收听完整内容</text>
+            </svg>
+            <div class="content">
+                <div class="title">🎙️ 音频录音 - 摘要+音频</div>
+                <div class="desc">今天的会议主要讨论了产品路线图的更新，包括Q4的发布计划和资源分配。团队一致同意将重点放在用户体验优化...</div>
+                <div class="url">audio-share-nu.vercel.app</div>
+            </div>
+        </div>
+        
+        <div class="section-title">WhatsApp 预览:</div>
+        <div class="whatsapp-preview">
+            <div class="card">
+                <svg width="100%" height="200" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="whatsappGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="100%" height="200" fill="url(#whatsappGradient)"/>
+                    <circle cx="50%" cy="80" r="35" fill="white"/>
+                    <text x="50%" y="85" font-size="30" text-anchor="middle">🎙️</text>
+                    <text x="50%" y="140" font-family="system-ui" font-size="20" font-weight="bold" text-anchor="middle" fill="white">音频录音分享</text>
+                    <text x="50%" y="165" font-family="system-ui" font-size="14" text-anchor="middle" fill="white" opacity="0.9">点击收听完整内容</text>
+                </svg>
+                <div class="content">
+                    <div class="title">🎙️ 音频录音 - 摘要+音频</div>
+                    <div class="desc">今天的会议主要讨论了产品路线图的更新，包括Q4的发布计划...</div>
+                    <div class="link">audio-share-nu.vercel.app</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-title">Twitter 预览:</div>
+        <div class="twitter-preview">
+            <svg width="100%" height="250" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="twitterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect width="100%" height="250" fill="url(#twitterGradient)"/>
+                <circle cx="50%" cy="100" r="40" fill="white"/>
+                <text x="50%" y="105" font-size="35" text-anchor="middle">🎙️</text>
+                <text x="50%" y="170" font-family="system-ui" font-size="24" font-weight="bold" text-anchor="middle" fill="white">音频录音分享</text>
+                <text x="50%" y="200" font-family="system-ui" font-size="16" text-anchor="middle" fill="white" opacity="0.9">点击收听完整内容</text>
+            </svg>
+            <div class="content">
+                <div class="domain">audio-share-nu.vercel.app</div>
+                <div class="title">🎙️ 音频录音 - 摘要+音频</div>
+                <div class="desc">今天的会议主要讨论了产品路线图的更新，包括Q4的发布计划和资源分配。</div>
+            </div>
+        </div>
+        
+        <div class="section-title">说明:</div>
+        <p style="line-height: 1.8;">
+            • <strong>微信</strong>: 显示大图卡片，带有渐变背景和麦克风图标<br>
+            • <strong>WhatsApp</strong>: 显示中等大小预览，绿色消息气泡风格<br>
+            • <strong>Twitter</strong>: 显示大图卡片格式，适合信息流展示<br>
+            • <strong>其他平台</strong>: Facebook、LinkedIn、Telegram等都会显示类似的预览卡片
+        </p>
+    </div>
+</body>
+</html>
