@@ -182,7 +182,7 @@
         
         <div class="section-title">实际预览图片 (匹配App风格):</div>
         <div class="preview-image">
-            <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto;">
+            <svg viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: auto;">
                 <!-- White background like the app -->
                 <rect width="1200" height="630" fill="#FFFFFF"/>
                 
@@ -237,21 +237,33 @@
         
         <div class="section-title">微信 (WeChat) 预览:</div>
         <div class="wechat-preview">
-            <svg width="100%" height="200" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="wechatGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
-                    </linearGradient>
-                </defs>
-                <rect width="100%" height="200" fill="url(#wechatGradient)"/>
-                <circle cx="50%" cy="80" r="35" fill="white"/>
-                <text x="50%" y="85" font-size="30" text-anchor="middle">🎙️</text>
-                <text x="50%" y="140" font-family="system-ui" font-size="20" font-weight="bold" text-anchor="middle" fill="white">音频录音分享</text>
-                <text x="50%" y="165" font-family="system-ui" font-size="14" text-anchor="middle" fill="white" opacity="0.9">点击收听完整内容</text>
+            <svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 200px;">
+                <!-- White background -->
+                <rect width="800" height="200" fill="#FFFFFF"/>
+                <!-- Top border -->
+                <rect x="0" y="0" width="800" height="1" fill="#000000"/>
+                <!-- Card container -->
+                <rect x="150" y="40" width="500" height="120" rx="8" fill="#FFFFFF" stroke="#000000" stroke-width="1"/>
+                <!-- Play button -->
+                <circle cx="220" cy="100" r="25" fill="#000000"/>
+                <polygon points="213,90 213,110 230,100" fill="#FFFFFF"/>
+                <!-- Waveform -->
+                <g transform="translate(270, 100)">
+                    <rect x="0" y="-10" width="3" height="20" fill="#000000" opacity="0.2"/>
+                    <rect x="8" y="-15" width="3" height="30" fill="#000000" opacity="0.3"/>
+                    <rect x="16" y="-8" width="3" height="16" fill="#000000" opacity="0.2"/>
+                    <rect x="24" y="-18" width="3" height="36" fill="#000000" opacity="0.4"/>
+                    <rect x="32" y="-12" width="3" height="24" fill="#000000" opacity="0.2"/>
+                    <rect x="40" y="-15" width="3" height="30" fill="#000000" opacity="0.3"/>
+                    <rect x="48" y="-10" width="3" height="20" fill="#000000" opacity="0.2"/>
+                    <rect x="56" y="-18" width="3" height="36" fill="#000000" opacity="0.3"/>
+                </g>
+                <!-- Title -->
+                <text x="400" y="90" font-family="system-ui" font-size="18" font-weight="600" fill="#000000">音频录音</text>
+                <text x="400" y="115" font-family="system-ui" font-size="14" fill="#666666">点击播放</text>
             </svg>
             <div class="content">
-                <div class="title">🎙️ 音频录音 - 摘要+音频</div>
+                <div class="title">音频录音 - 摘要+音频</div>
                 <div class="desc">今天的会议主要讨论了产品路线图的更新，包括Q4的发布计划和资源分配。团队一致同意将重点放在用户体验优化...</div>
                 <div class="url">audio-share-nu.vercel.app</div>
             </div>
@@ -260,21 +272,29 @@
         <div class="section-title">WhatsApp 预览:</div>
         <div class="whatsapp-preview">
             <div class="card">
-                <svg width="100%" height="200" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="whatsappGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <rect width="100%" height="200" fill="url(#whatsappGradient)"/>
-                    <circle cx="50%" cy="80" r="35" fill="white"/>
-                    <text x="50%" y="85" font-size="30" text-anchor="middle">🎙️</text>
-                    <text x="50%" y="140" font-family="system-ui" font-size="20" font-weight="bold" text-anchor="middle" fill="white">音频录音分享</text>
-                    <text x="50%" y="165" font-family="system-ui" font-size="14" text-anchor="middle" fill="white" opacity="0.9">点击收听完整内容</text>
+                <svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 200px;">
+                    <!-- White background -->
+                    <rect width="800" height="200" fill="#FFFFFF"/>
+                    <!-- Top border -->
+                    <rect x="0" y="0" width="800" height="1" fill="#000000"/>
+                    <!-- Play button -->
+                    <circle cx="100" cy="100" r="30" fill="#000000"/>
+                    <polygon points="92,88 92,112 112,100" fill="#FFFFFF"/>
+                    <!-- Waveform -->
+                    <g transform="translate(160, 100)">
+                        <rect x="0" y="-12" width="4" height="24" fill="#000000" opacity="0.2"/>
+                        <rect x="10" y="-18" width="4" height="36" fill="#000000" opacity="0.3"/>
+                        <rect x="20" y="-10" width="4" height="20" fill="#000000" opacity="0.2"/>
+                        <rect x="30" y="-20" width="4" height="40" fill="#000000" opacity="0.4"/>
+                        <rect x="40" y="-14" width="4" height="28" fill="#000000" opacity="0.2"/>
+                        <rect x="50" y="-18" width="4" height="36" fill="#000000" opacity="0.3"/>
+                    </g>
+                    <!-- Title -->
+                    <text x="280" y="95" font-family="system-ui" font-size="20" font-weight="600" fill="#000000">音频录音</text>
+                    <text x="280" y="120" font-family="system-ui" font-size="16" fill="#666666">点击播放</text>
                 </svg>
                 <div class="content">
-                    <div class="title">🎙️ 音频录音 - 摘要+音频</div>
+                    <div class="title">音频录音 - 摘要+音频</div>
                     <div class="desc">今天的会议主要讨论了产品路线图的更新，包括Q4的发布计划...</div>
                     <div class="link">audio-share-nu.vercel.app</div>
                 </div>
@@ -283,32 +303,50 @@
         
         <div class="section-title">Twitter 预览:</div>
         <div class="twitter-preview">
-            <svg width="100%" height="250" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="twitterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
-                    </linearGradient>
-                </defs>
-                <rect width="100%" height="250" fill="url(#twitterGradient)"/>
-                <circle cx="50%" cy="100" r="40" fill="white"/>
-                <text x="50%" y="105" font-size="35" text-anchor="middle">🎙️</text>
-                <text x="50%" y="170" font-family="system-ui" font-size="24" font-weight="bold" text-anchor="middle" fill="white">音频录音分享</text>
-                <text x="50%" y="200" font-family="system-ui" font-size="16" text-anchor="middle" fill="white" opacity="0.9">点击收听完整内容</text>
+            <svg viewBox="0 0 800 250" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 250px;">
+                <!-- White background -->
+                <rect width="800" height="250" fill="#FFFFFF"/>
+                <!-- Top border -->
+                <rect x="0" y="0" width="800" height="2" fill="#000000"/>
+                <!-- Card container -->
+                <rect x="200" y="60" width="400" height="130" rx="8" fill="#FFFFFF" stroke="#000000" stroke-width="1"/>
+                <!-- Play button -->
+                <circle cx="400" cy="110" r="30" fill="#000000"/>
+                <polygon points="392,98 392,122 412,110" fill="#FFFFFF"/>
+                <!-- Waveform -->
+                <g transform="translate(340, 160)">
+                    <rect x="0" y="-8" width="3" height="16" fill="#000000" opacity="0.2"/>
+                    <rect x="8" y="-12" width="3" height="24" fill="#000000" opacity="0.3"/>
+                    <rect x="16" y="-6" width="3" height="12" fill="#000000" opacity="0.2"/>
+                    <rect x="24" y="-15" width="3" height="30" fill="#000000" opacity="0.4"/>
+                    <rect x="32" y="-10" width="3" height="20" fill="#000000" opacity="0.2"/>
+                    <rect x="40" y="-12" width="3" height="24" fill="#000000" opacity="0.3"/>
+                    <rect x="48" y="-8" width="3" height="16" fill="#000000" opacity="0.2"/>
+                    <rect x="56" y="-14" width="3" height="28" fill="#000000" opacity="0.3"/>
+                    <rect x="64" y="-10" width="3" height="20" fill="#000000" opacity="0.2"/>
+                    <rect x="72" y="-12" width="3" height="24" fill="#000000" opacity="0.3"/>
+                    <rect x="80" y="-8" width="3" height="16" fill="#000000" opacity="0.2"/>
+                    <rect x="88" y="-15" width="3" height="30" fill="#000000" opacity="0.4"/>
+                    <rect x="96" y="-10" width="3" height="20" fill="#000000" opacity="0.2"/>
+                    <rect x="104" y="-12" width="3" height="24" fill="#000000" opacity="0.3"/>
+                    <rect x="112" y="-8" width="3" height="16" fill="#000000" opacity="0.2"/>
+                </g>
+                <!-- Bottom border -->
+                <rect x="0" y="248" width="800" height="2" fill="#000000"/>
             </svg>
             <div class="content">
                 <div class="domain">audio-share-nu.vercel.app</div>
-                <div class="title">🎙️ 音频录音 - 摘要+音频</div>
+                <div class="title">音频录音 - 摘要+音频</div>
                 <div class="desc">今天的会议主要讨论了产品路线图的更新，包括Q4的发布计划和资源分配。</div>
             </div>
         </div>
         
         <div class="section-title">说明:</div>
         <p style="line-height: 1.8;">
-            • <strong>微信</strong>: 显示大图卡片，带有渐变背景和麦克风图标<br>
-            • <strong>WhatsApp</strong>: 显示中等大小预览，绿色消息气泡风格<br>
-            • <strong>Twitter</strong>: 显示大图卡片格式，适合信息流展示<br>
-            • <strong>其他平台</strong>: Facebook、LinkedIn、Telegram等都会显示类似的预览卡片
+            • <strong>微信</strong>: 显示简洁的黑白风格卡片，带有播放按钮和波形<br>
+            • <strong>WhatsApp</strong>: 显示极简设计预览，黑色播放按钮<br>
+            • <strong>Twitter</strong>: 显示干净的卡片格式，适合信息流展示<br>
+            • <strong>其他平台</strong>: Facebook、LinkedIn、Telegram等都会显示类似的极简预览卡片
         </p>
     </div>
 </body>
