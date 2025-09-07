@@ -33,7 +33,7 @@ final class ShareableContent: NSObject, UIActivityItemSource {
         metadata.title = title
         
         // Use the same image as the website for consistency
-        if let imageURL = URL(string: "https://audio-share-nu.vercel.app/og-preview.png") {
+        if let imageURL = URL(string: "https://audio-share-nu.vercel.app/clean-preview.png") {
             metadata.imageProvider = NSItemProvider(contentsOf: imageURL)
         } else {
             metadata.imageProvider = NSItemProvider(object: image ?? createDefaultImage())
