@@ -1407,7 +1407,7 @@ class StepRealtimeManager: NSObject, ObservableObject {
                     "content": [
                         [
                             "type": "input_text",
-                            "text": "请根据以下音频转录内容生成简洁的摘要，要求：1)准确反映核心内容，2)不超过8个字，3)避免使用emoji或无关装饰文字，4)直接提取关键信息。转录内容：\(text)"
+                            "text": "请分析音频内容并按以下格式回复：\n转录：\(text)\n总结：[8字以内准确摘要]\n表达：[说话/唱歌/演讲/朗读]\n\n判断标准：只有明显的旋律、节拍、音调变化才是唱歌；重复说话仍是说话；问候语言是说话。"
                         ]
                     ]
                 ]
@@ -1811,18 +1811,24 @@ class StepRealtimeManager: NSObject, ObservableObject {
     private func inferAudioTypeFromExpression(_ expression: String, emotion: String) -> AudioType {
         let expressionLower = expression.lowercased()
         
-        if expressionLower.contains("唱歌") || expressionLower.contains("歌唱") || expressionLower.contains("吟唱") {
+        // 更严格的唱歌判断：需要明确的音乐相关词汇
+        if expressionLower.contains("唱歌") || expressionLower.contains("歌唱") || 
+           expressionLower.contains("吟唱") || expressionLower.contains("哼歌") {
             return .singing
-        } else if expressionLower.contains("对话") || expressionLower.contains("交谈") || expressionLower.contains("聊天") {
+        } else if expressionLower.contains("对话") || expressionLower.contains("交谈") || 
+                  expressionLower.contains("聊天") || expressionLower.contains("问候") {
             return .conversation
-        } else if expressionLower.contains("演讲") || expressionLower.contains("朗读") || expressionLower.contains("朗诵") {
+        } else if expressionLower.contains("演讲") || expressionLower.contains("发言") {
+            return .humanVoice
+        } else if expressionLower.contains("朗读") || expressionLower.contains("朗诵") {
             return .humanVoice
         } else if expressionLower.contains("呼喊") || expressionLower.contains("叫喊") {
             return .humanVoice
         } else if expressionLower.contains("耳语") || expressionLower.contains("窃窃私语") {
             return .humanVoice
         } else {
-            return .humanVoice
+            // 默认为人声对话，避免误判为唱歌
+            return .conversation
         }
     }
     
@@ -1830,8 +1836,20 @@ class StepRealtimeManager: NSObject, ObservableObject {
     private func buildEnhancedSummary(summary: String, expression: String, emotion: String, characteristics: String) -> String {
         var enhancedSummary = summary
         
-        // 移除emoji前缀，保持摘要简洁
-        // 特殊表达方式的信息已经在分类中体现，不需要额外标识
+        // 基于真实内容添加合适的emoji前缀
+        if !expression.isEmpty && !expression.contains("说话") {
+            if expression.contains("唱歌") || expression.contains("歌唱") {
+                enhancedSummary = "🎵 \(summary)"
+            } else if expression.contains("演讲") || expression.contains("发言") {
+                enhancedSummary = "📢 \(summary)"
+            } else if expression.contains("朗读") || expression.contains("朗诵") {
+                enhancedSummary = "📖 \(summary)"
+            } else if expression.contains("呼喊") || expression.contains("叫喊") {
+                enhancedSummary = "📣 \(summary)"
+            } else if expression.contains("耳语") || expression.contains("私语") {
+                enhancedSummary = "🤫 \(summary)"
+            }
+        }
         
         // 移除情感emoji，保持文本简洁
         
