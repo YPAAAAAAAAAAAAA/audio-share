@@ -1407,7 +1407,7 @@ class StepRealtimeManager: NSObject, ObservableObject {
                     "content": [
                         [
                             "type": "input_text",
-                            "text": "分析这段音频内容：\(text)"
+                            "text": "请根据以下音频转录内容生成简洁的摘要，要求：1)准确反映核心内容，2)不超过8个字，3)避免使用emoji或无关装饰文字，4)直接提取关键信息。转录内容：\(text)"
                         ]
                     ]
                 ]
@@ -1830,35 +1830,10 @@ class StepRealtimeManager: NSObject, ObservableObject {
     private func buildEnhancedSummary(summary: String, expression: String, emotion: String, characteristics: String) -> String {
         var enhancedSummary = summary
         
-        // 如果是特殊表达方式，在总结前添加标识
-        if !expression.isEmpty && !expression.contains("说话") {
-            if expression.contains("唱歌") || expression.contains("歌唱") {
-                enhancedSummary = "🎵\(summary)"
-            } else if expression.contains("演讲") {
-                enhancedSummary = "📢\(summary)"
-            } else if expression.contains("朗读") || expression.contains("朗诵") {
-                enhancedSummary = "📖\(summary)"
-            } else if expression.contains("呼喊") {
-                enhancedSummary = "📣\(summary)"
-            } else if expression.contains("耳语") {
-                enhancedSummary = "🤫\(summary)"
-            }
-        }
+        // 移除emoji前缀，保持摘要简洁
+        // 特殊表达方式的信息已经在分类中体现，不需要额外标识
         
-        // 添加情感标识
-        if !emotion.isEmpty && !emotion.contains("平静") {
-            if emotion.contains("兴奋") || emotion.contains("开心") {
-                enhancedSummary += "😊"
-            } else if emotion.contains("愤怒") {
-                enhancedSummary += "😠"
-            } else if emotion.contains("悲伤") {
-                enhancedSummary += "😢"
-            } else if emotion.contains("紧张") || emotion.contains("焦虑") {
-                enhancedSummary += "😰"
-            } else if emotion.contains("轻松") {
-                enhancedSummary += "😌"
-            }
-        }
+        // 移除情感emoji，保持文本简洁
         
         return enhancedSummary
     }
