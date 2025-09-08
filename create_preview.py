@@ -15,9 +15,9 @@ def create_preview_image():
     border_width = 8
     draw.rectangle([0, 0, width-1, height-1], outline='black', width=border_width)
     
-    # Draw centered play button (large circle with triangle)
-    center_x, center_y = width // 2, height // 2 - 50
-    button_radius = 80
+    # Draw centered play button (smaller circle with triangle)
+    center_x, center_y = width // 2, height // 2
+    button_radius = 60
     
     # Draw play button circle
     draw.ellipse([
@@ -57,23 +57,7 @@ def create_preview_image():
             bar_x + bar_width, bar_y + bar_height
         ], fill='black')
     
-    # Add simple text "Audio Share" at the top (English only)
-    try:
-        # Try to load a system font
-        font_size = 48
-        font = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", font_size)
-    except:
-        # Fallback to default font
-        font = ImageFont.load_default()
-    
-    title_text = "Audio Share"
-    # Get text bounding box for centering
-    bbox = draw.textbbox((0, 0), title_text, font=font)
-    text_width = bbox[2] - bbox[0]
-    text_x = (width - text_width) // 2
-    text_y = 60
-    
-    draw.text((text_x, text_y), title_text, fill='black', font=font)
+    # Remove text - clean minimal design
     
     # Save the image
     output_path = '/Users/li/Desktop/audios/clean-preview.png'
