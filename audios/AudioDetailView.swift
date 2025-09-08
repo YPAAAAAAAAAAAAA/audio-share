@@ -769,7 +769,10 @@ struct AudioDetailView: View {
         let shareTypeParam = getShareTypeParam(for: shareType)
         // 添加版本参数强制微信刷新缓存
         let version = Int(Date().timeIntervalSince1970)
-        return "\(baseURL)?id=\(supabaseId)&type=\(shareTypeParam)&v=\(version)"
+        
+        // 添加设备当前时间参数，让Web页面使用设备时间而非服务器时间
+        let deviceTime = Int(Date().timeIntervalSince1970)
+        return "\(baseURL)?id=\(supabaseId)&type=\(shareTypeParam)&v=\(version)&time=\(deviceTime)"
     }
     
     func getShareTypeParam(for shareType: ShareType) -> String {

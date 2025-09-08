@@ -431,7 +431,21 @@
 
             // Update page metadata - SIMPLE FORMAT: 时间：内容
             const contentText = data.summary && data.summary.trim() ? data.summary : '音频录音';
-            const simpleTitle = `${formatDate(data.created_at)}：${contentText}`;
+            
+            // 使用URL中的设备时间参数（分享时的时间）
+            const urlParams = new URLSearchParams(window.location.search);
+            const deviceTime = urlParams.get('time');
+            let displayTime;
+            
+            if (deviceTime) {
+                // 使用设备时间（分享时的时间）
+                displayTime = formatDate(new Date(parseInt(deviceTime) * 1000).toISOString());
+            } else {
+                // 回退到当前时间
+                displayTime = formatDate(new Date().toISOString());
+            }
+            
+            const simpleTitle = `${displayTime}：${contentText}`;
             
             pageTitle.textContent = simpleTitle;
             ogTitle.setAttribute('content', simpleTitle);
@@ -461,10 +475,8 @@
                 noContent.classList.remove('hidden');
             }
 
-            // Update timestamp
-            if (data.created_at) {
-                timestamp.textContent = formatDate(data.created_at);
-            }
+            // Update timestamp - 使用相同的显示时间
+            timestamp.textContent = displayTime;
         }
 
         // Setup audio player
