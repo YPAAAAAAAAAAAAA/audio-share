@@ -7,7 +7,6 @@
     <meta property="og:title" content="音频录音分享" id="og-title" />
     <meta property="og:description" content="点击查看音频录音的详细内容" id="og-description" />
     <meta property="og:type" content="website" />
-    <!-- Force deployment refresh -->
     <style>
         * {
             margin: 0;
@@ -312,28 +311,6 @@
     <audio id="audioPlayer" style="display: none;" crossorigin="anonymous"></audio>
 
     <script>
-        // Simple redirect for international users (WeChat-compatible)
-        function checkAndRedirect() {
-            if (window.location.hostname === '124.221.156.222') {
-                var xhr = new XMLHttpRequest();
-                xhr.open('GET', 'https://ipapi.co/country_code/', true);
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        var countryCode = xhr.responseText.trim();
-                        if (countryCode !== 'CN') {
-                            var currentUrl = window.location.href;
-                            var vercelUrl = currentUrl.replace('http://124.221.156.222', 'https://audio-share.vercel.app');
-                            window.location.href = vercelUrl;
-                        }
-                    }
-                };
-                xhr.send();
-            }
-        }
-        
-        // Run redirect check
-        checkAndRedirect();
-        
         // Configuration
         const SUPABASE_URL = 'https://wfxlihpxeeyjlllvoypa.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndmeGxpaHB4ZWV5amxsbHZveXBhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3MDM0ODUsImV4cCI6MjA3MjI3OTQ4NX0.wubM4vjBuHxCHqm176fpieSVax0AofdzLYpwcFaSf9k';
@@ -414,15 +391,15 @@
             const showSummary = (shareType === 'summary' || shareType === 'combined') && data.summary;
             const showTranscription = (shareType === 'summary' || shareType === 'combined') && data.transcription;
 
-            // Update page metadata - SIMPLE FORMAT: 时间：内容
-            const contentText = data.summary && data.summary.trim() ? data.summary : '音频录音';
-            const simpleTitle = `${formatDate(data.created_at)}：${contentText}`;
+            // Update page metadata
+            const title = `音频录音 - ${getShareTypeName(shareType)}`;
+            pageTitle.textContent = title;
+            ogTitle.setAttribute('content', title);
+            headerTitle.textContent = title;
             
-            pageTitle.textContent = simpleTitle;
-            ogTitle.setAttribute('content', simpleTitle);
-            headerTitle.textContent = simpleTitle;
-            
-            ogDescription.setAttribute('content', '点击播放音频');
+            if (data.summary) {
+                ogDescription.setAttribute('content', data.summary.substring(0, 100) + '...');
+            }
 
             // Show relevant sections
             if (showAudio && data.audio_url) {

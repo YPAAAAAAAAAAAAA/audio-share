@@ -34,7 +34,7 @@ final class ShareableContent: NSObject, UIActivityItemSource {
         
         // Use the same image as the website for consistency
         // 预览图片使用Vercel（HTTPS，全球访问）确保兼容性
-        if let imageURL = URL(string: "https://audio-share.vercel.app/minimal-preview.png") {
+        if let imageURL = URL(string: "https://audio-share-nu.vercel.app/minimal-preview.png") {
             metadata.imageProvider = NSItemProvider(contentsOf: imageURL)
         } else {
             metadata.imageProvider = NSItemProvider(object: image ?? createDefaultImage())
@@ -767,7 +767,9 @@ struct AudioDetailView: View {
         let baseURL = "http://124.221.156.222"
         
         let shareTypeParam = getShareTypeParam(for: shareType)
-        return "\(baseURL)?id=\(supabaseId)&type=\(shareTypeParam)"
+        // 添加版本参数强制微信刷新缓存
+        let version = Int(Date().timeIntervalSince1970)
+        return "\(baseURL)?id=\(supabaseId)&type=\(shareTypeParam)&v=\(version)"
     }
     
     func getShareTypeParam(for shareType: ShareType) -> String {
