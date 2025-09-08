@@ -2,27 +2,11 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <!-- Open Graph Meta Tags MUST be first for WeChat -->
-    <meta property="og:title" content="" id="og-title" />
-    <meta property="og:description" content="" id="og-description" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://audio-share.vercel.app/minimal-preview.png" id="og-image" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:url" content="https://audio-share.vercel.app/" id="og-url" />
-    <meta property="og:site_name" content="Audio Share" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title id="page-title">音频分享 - Audio Share</title>
-    
-    <!-- WeChat specific -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="音频录音分享" id="twitter-title" />
-    <meta name="twitter:description" content="点击查看音频录音的详细内容" id="twitter-description" />
-    <meta name="twitter:image" content="https://audio-share.vercel.app/og-preview.png" id="twitter-image" />
-    
-    <!-- Additional tags for better compatibility -->
-    <link rel="image_src" href="https://audio-share.vercel.app/og-preview.png" />
-    <meta itemprop="image" content="https://audio-share.vercel.app/og-preview.png" />
+    <meta property="og:title" content="音频录音分享" id="og-title" />
+    <meta property="og:description" content="点击查看音频录音的详细内容" id="og-description" />
+    <meta property="og:type" content="website" />
     <style>
         * {
             margin: 0;
@@ -327,27 +311,27 @@
     <audio id="audioPlayer" style="display: none;" crossorigin="anonymous"></audio>
 
     <script>
-        // Smart redirect for international users
-        async function checkAndRedirectIfNeeded() {
-            try {
-                const response = await fetch('https://ipapi.co/country_code/');
-                const countryCode = await response.text();
-                
-                // If not in China, redirect to Vercel for better performance
-                if (countryCode.trim() !== 'CN' && window.location.hostname === '124.221.156.222') {
-                    const currentUrl = window.location.href;
-                    const vercelUrl = currentUrl.replace('http://124.221.156.222', 'https://audio-share.vercel.app');
-                    console.log('Redirecting international user to Vercel:', vercelUrl);
-                    window.location.href = vercelUrl;
-                    return;
-                }
-            } catch (error) {
-                console.log('IP detection failed, continuing with current server');
+        // Simple redirect for international users (WeChat-compatible)
+        function checkAndRedirect() {
+            if (window.location.hostname === '124.221.156.222') {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', 'https://ipapi.co/country_code/', true);
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var countryCode = xhr.responseText.trim();
+                        if (countryCode !== 'CN') {
+                            var currentUrl = window.location.href;
+                            var vercelUrl = currentUrl.replace('http://124.221.156.222', 'https://audio-share.vercel.app');
+                            window.location.href = vercelUrl;
+                        }
+                    }
+                };
+                xhr.send();
             }
         }
         
         // Run redirect check
-        checkAndRedirectIfNeeded();
+        checkAndRedirect();
         
         // Configuration
         const SUPABASE_URL = 'https://wfxlihpxeeyjlllvoypa.supabase.co';
@@ -429,25 +413,15 @@
             const showSummary = (shareType === 'summary' || shareType === 'combined') && data.summary;
             const showTranscription = (shareType === 'summary' || shareType === 'combined') && data.transcription;
 
-            // Update page metadata - SIMPLE FORMAT for WeChat
+            // Update page metadata - SIMPLE FORMAT: 时间：内容
             const contentText = data.summary && data.summary.trim() ? data.summary : '音频录音';
             const simpleTitle = `${formatDate(data.created_at)}：${contentText}`;
             
             pageTitle.textContent = simpleTitle;
+            ogTitle.setAttribute('content', simpleTitle);
             headerTitle.textContent = simpleTitle;
             
-            // Update Open Graph meta tags with simple format
-            document.getElementById('og-title').setAttribute('content', simpleTitle);
-            document.getElementById('twitter-title').setAttribute('content', simpleTitle);
-            
-            // Simple description
-            const description = contentText;
-            document.getElementById('og-description').setAttribute('content', description);
-            document.getElementById('twitter-description').setAttribute('content', description);
-            
-            // Set the current URL
-            const currentUrl = window.location.href;
-            document.getElementById('og-url').setAttribute('content', currentUrl);
+            ogDescription.setAttribute('content', '点击播放音频');
 
             // Show relevant sections
             if (showAudio && data.audio_url) {
