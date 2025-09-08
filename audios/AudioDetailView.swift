@@ -33,7 +33,8 @@ final class ShareableContent: NSObject, UIActivityItemSource {
         metadata.title = title
         
         // Use the same image as the website for consistency
-        if let imageURL = URL(string: "https://audio-share-nu.vercel.app/minimal-preview.png") {
+        // 预览图片使用Vercel（HTTPS，全球访问）确保兼容性
+        if let imageURL = URL(string: "https://audio-share.vercel.app/minimal-preview.png") {
             metadata.imageProvider = NSItemProvider(contentsOf: imageURL)
         } else {
             metadata.imageProvider = NSItemProvider(object: image ?? createDefaultImage())
@@ -754,16 +755,16 @@ struct AudioDetailView: View {
         }
     }
     
-    func generateWebPageURL(for shareType: ShareType) async -> String {
+    func generateWebPageURL(for shareType: ShareType) -> String {
         // For testing WeChat preview: uncomment the next line to test with placeholder
-        // return "https://audio-share-nu.vercel.app/test-wechat.html"
+        // return "https://audio-share.vercel.app/test-wechat.html"
         
         guard let supabaseId = recording.supabaseId else {
             return "录音未上传到云端"
         }
         
-        // Vercel部署的分享页面URL
-        let baseURL = "https://audio-share-nu.vercel.app"
+        // 使用腾讯云作为主入口，网页端会根据访问者IP智能重定向
+        let baseURL = "http://124.221.156.222"
         
         let shareTypeParam = getShareTypeParam(for: shareType)
         return "\(baseURL)?id=\(supabaseId)&type=\(shareTypeParam)"
@@ -932,6 +933,7 @@ struct AudioDetailView: View {
         let remainingSeconds = seconds % 60
         return String(format: "%d:%02d", minutes, remainingSeconds)
     }
+    
     
     func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
