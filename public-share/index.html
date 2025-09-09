@@ -324,18 +324,18 @@
     </div>
 
     <!-- Audio Element (Hidden) -->
-    <audio id="audioPlayer" style="display: none;" crossorigin="anonymous"></audio>
+    <audio id="audioPlayer" style="display: none;"></audio>
 
     <script>
         // Simple redirect for international users (WeChat-compatible)
         function checkAndRedirect() {
             if (window.location.hostname === '124.221.156.222') {
                 var xhr = new XMLHttpRequest();
-                xhr.open('GET', 'https://ipapi.co/country_code/', true);
+                xhr.open('GET', 'https://ipinfo.io/country', true);
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4 && xhr.status === 200) {
-                        var countryCode = xhr.responseText.trim();
-                        if (countryCode !== 'CN') {
+                        var country = xhr.responseText.trim();
+                        if (country !== 'CN') {
                             var currentUrl = window.location.href;
                             var vercelUrl = currentUrl.replace('http://124.221.156.222', 'https://audio-share-nu.vercel.app');
                             window.location.href = vercelUrl;
@@ -483,13 +483,12 @@
         function setupAudioPlayer(url, duration) {
             durationText.textContent = formatDuration(duration);
             
-            // Convert signed URL to public URL if needed
-            if (url && url.includes('/storage/v1/object/sign/')) {
-                // Extract the path from the signed URL
-                const urlObj = new URL(url);
+            // Always use public URL for better compatibility
+            if (url && url.includes('/storage/v1/object/')) {
+                // Extract the path from any Supabase storage URL
                 const pathMatch = url.match(/audio-files\/[^?]+/);
                 if (pathMatch) {
-                    // Use public URL endpoint
+                    // Use public URL endpoint without crossorigin issues
                     const supabaseUrl = 'https://wfxlihpxeeyjlllvoypa.supabase.co';
                     url = `${supabaseUrl}/storage/v1/object/public/${pathMatch[0]}`;
                 }
@@ -515,12 +514,23 @@
             });
 
             audioPlayer.addEventListener('error', (e) => {
-                console.error('Audio error:', e, 'URL:', audioPlayer.src);
+                console.error('Audio error details:', {
+                    error: e,
+                    errorCode: e.target.error ? e.target.error.code : 'unknown',
+                    errorMessage: e.target.error ? e.target.error.message : 'unknown',
+                    audioSrc: audioPlayer.src,
+                    readyState: audioPlayer.readyState,
+                    networkState: audioPlayer.networkState
+                });
+                
                 playButton.style.opacity = '0.5';
-                playButton.innerHTML = '<div style="font-size: 12px;">无法播放</div>';
-                // Show more detailed error
-                const errorMsg = `音频加载失败: ${e.target.error ? e.target.error.message : '未知错误'}`;
-                console.error(errorMsg);
+                playButton.innerHTML = '<div style="font-size: 12px;">播放失败</div>';
+                
+                // Try alternative approaches
+                console.log('Attempting to reload audio...');
+                setTimeout(() => {
+                    audioPlayer.load();
+                }, 1000);
             });
         }
 
