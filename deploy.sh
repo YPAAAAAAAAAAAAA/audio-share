@@ -3,18 +3,19 @@
 # 服务器信息
 SERVER_IP="124.221.156.222"
 SERVER_USER="root"
-LOCAL_DIR="/Users/li/Desktop/audios/public-share"
+SSH_KEY="/Users/li/Desktop/audioshare.pem"
+LOCAL_DIR="/Users/li/Desktop/audios_副本26/public-share"
 REMOTE_DIR="/var/www/html"
 
 echo "📦 正在打包文件..."
-cd /Users/li/Desktop/audios
+cd /Users/li/Desktop/audios_副本26
 tar -czf public-share.tar.gz public-share/
 
 echo "📤 上传到服务器..."
-scp public-share.tar.gz ${SERVER_USER}@${SERVER_IP}:/tmp/
+scp -i ${SSH_KEY} public-share.tar.gz ${SERVER_USER}@${SERVER_IP}:/tmp/
 
 echo "🚀 在服务器上部署..."
-ssh ${SERVER_USER}@${SERVER_IP} << 'EOF'
+ssh -i ${SSH_KEY} ${SERVER_USER}@${SERVER_IP} << 'EOF'
 # 安装 Nginx
 echo "Installing Nginx..."
 dnf install -y nginx

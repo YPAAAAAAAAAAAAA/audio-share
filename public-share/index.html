@@ -6,7 +6,7 @@
     <meta property="og:title" content="音频录音分享" id="og-title" />
     <meta property="og:description" content="点击查看音频录音的详细内容" id="og-description" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://audio-share-nu.vercel.app/clean-preview.png" id="og-image" />
+    <meta property="og:image" content="http://124.221.156.222/clean-preview.png" id="og-image" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:url" content="https://audio-share-nu.vercel.app/" id="og-url" />
@@ -18,11 +18,11 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="音频录音分享" id="twitter-title" />
     <meta name="twitter:description" content="点击查看音频录音的详细内容" id="twitter-description" />
-    <meta name="twitter:image" content="https://audio-share-nu.vercel.app/clean-preview.png" id="twitter-image" />
+    <meta name="twitter:image" content="http://124.221.156.222/clean-preview.png" id="twitter-image" />
     
     <!-- Additional tags for better compatibility -->
-    <link rel="image_src" href="https://audio-share-nu.vercel.app/clean-preview.png" />
-    <meta itemprop="image" content="https://audio-share-nu.vercel.app/clean-preview.png" />
+    <link rel="image_src" href="http://124.221.156.222/clean-preview.png" />
+    <meta itemprop="image" content="http://124.221.156.222/clean-preview.png" />
     <style>
         * {
             margin: 0;
@@ -196,6 +196,53 @@
             white-space: pre-wrap;
         }
 
+        /* Image Section Styles */
+        .image-section {
+            height: 65%;
+            background: white;
+            border: 2px solid #000;
+            border-radius: 12px 12px 0 0;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .recording-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .image-loading-spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid #f0f0f0;
+            border-top: 3px solid #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* When image is present, adjust player card to connect seamlessly */
+        .player-card.with-image {
+            border-radius: 0 0 12px 12px;
+            border-top: none;
+            margin-top: 0;
+        }
+
         .footer {
             padding: 20px;
             text-align: center;
@@ -279,6 +326,14 @@
         <!-- Error State -->
         <div class="error hidden" id="error">
             <div id="error-message">加载失败</div>
+        </div>
+
+        <!-- Image Section (65% height when present) -->
+        <div class="image-section hidden" id="imageSection">
+            <img id="recordingImage" class="recording-image" alt="Recording visualization" />
+            <div class="image-loading hidden" id="imageLoading">
+                <div class="image-loading-spinner"></div>
+            </div>
         </div>
 
         <!-- Player Card -->
@@ -373,6 +428,9 @@
         const pageTitle = document.getElementById('page-title');
         const ogTitle = document.getElementById('og-title');
         const ogDescription = document.getElementById('og-description');
+        const imageSection = document.getElementById('imageSection');
+        const recordingImage = document.getElementById('recordingImage');
+        const imageLoading = document.getElementById('imageLoading');
 
         // State
         let isPlaying = false;
@@ -403,7 +461,7 @@
 
         // Fetch recording data from Supabase
         async function fetchRecordingData(id) {
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/audio_records?id=eq.${id}&select=id,audio_url,duration,created_at,summary,transcription`, {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/audio_records?id=eq.${id}&select=id,audio_url,duration,created_at,summary,transcription,image_url`, {
                 headers: {
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
@@ -457,6 +515,23 @@
             if (showAudio && data.audio_url) {
                 setupAudioPlayer(data.audio_url, data.duration);
                 playerCard.classList.remove('hidden');
+            }
+
+            // Handle image display
+            if (data.image_url) {
+                setupImageDisplay(data.image_url);
+                imageSection.classList.remove('hidden');
+                // Adjust audio controls layout to 35% height when image is present
+                if (showAudio && data.audio_url) {
+                    playerCard.style.height = '35%';
+                    playerCard.classList.add('with-image');
+                }
+            } else {
+                // Full height for audio controls when no image
+                if (showAudio && data.audio_url) {
+                    playerCard.style.height = '100%';
+                    playerCard.classList.remove('with-image');
+                }
             }
 
             if (showSummary) {
@@ -532,6 +607,39 @@
                     audioPlayer.load();
                 }, 1000);
             });
+        }
+
+        // Setup image display
+        function setupImageDisplay(imageUrl) {
+            // Show loading state
+            imageLoading.classList.remove('hidden');
+            recordingImage.style.display = 'none';
+            
+            // Process Supabase storage URL if needed
+            if (imageUrl && imageUrl.includes('/storage/v1/object/')) {
+                const pathMatch = imageUrl.match(/image-files\/[^?]+/);
+                if (pathMatch) {
+                    const supabaseUrl = 'https://wfxlihpxeeyjlllvoypa.supabase.co';
+                    imageUrl = `${supabaseUrl}/storage/v1/object/public/${pathMatch[0]}`;
+                }
+            }
+            
+            console.log('Loading image from:', imageUrl);
+            
+            // Load image
+            recordingImage.onload = () => {
+                imageLoading.classList.add('hidden');
+                recordingImage.style.display = 'block';
+            };
+            
+            recordingImage.onerror = () => {
+                console.error('Failed to load image:', imageUrl);
+                imageLoading.classList.add('hidden');
+                recordingImage.style.display = 'none';
+                // Optionally show error message or fallback
+            };
+            
+            recordingImage.src = imageUrl;
         }
 
         // Generate waveform visualization
